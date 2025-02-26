@@ -1,6 +1,9 @@
+import tkinter as tk
+from tkinter import messagebox
 from sklearn.linear_model import LinearRegression
 import numpy as np
 
+# Prepare the data and model
 data = [
     {"age": 25, "weight": 70, "exercise_level": 7, "diet": 6, "bmi": 24.2},
     {"age": 30, "weight": 80, "exercise_level": 5, "diet": 7, "bmi": 27.0},
@@ -24,16 +27,53 @@ x = np.array([[entry["age"], entry["weight"], entry["exercise_level"], entry["di
 y = np.array([entry["bmi"] for entry in data])
 
 model = LinearRegression()
-model.fit(x,y)
+model.fit(x, y)
 
-print("Maglumat giriz:")
+# Function to predict BMI
+def predict_bmi():
+    try:
+        age = float(age_entry.get())
+        weight = float(weight_entry.get())
+        exercise_level = float(exercise_level_entry.get())
+        diet = float(diet_entry.get())
 
-age = float(input("age:"))
-weight = float(input("weight:"))
-exercise_level = float(input("exercise level:"))
-diet = float(input("diet:"))
+        new_person = np.array([[age, weight, exercise_level, diet]])
+        predict = model.predict(new_person)
 
-new_person = np.array([[age,weight,exercise_level,diet]])
-predict = model.predict(new_person)
+        result_label.config(text=f"Predicted BMI: {predict[0]:.2f}")
+    except ValueError:
+        messagebox.showerror("Invalid input", "Please enter valid numerical values for all fields.")
 
-print(f"Predicted BMI for the person : {predict[0]:.2f}")
+# Create the main window
+root = tk.Tk()
+root.title("BMI Prediction")
+
+# Create and place the widgets
+age_label = tk.Label(root, text="Age:")
+age_label.grid(row=0, column=0, padx=10, pady=5)
+age_entry = tk.Entry(root)
+age_entry.grid(row=0, column=1, padx=10, pady=5)
+
+weight_label = tk.Label(root, text="Weight:")
+weight_label.grid(row=1, column=0, padx=10, pady=5)
+weight_entry = tk.Entry(root)
+weight_entry.grid(row=1, column=1, padx=10, pady=5)
+
+exercise_level_label = tk.Label(root, text="Exercise Level:")
+exercise_level_label.grid(row=2, column=0, padx=10, pady=5)
+exercise_level_entry = tk.Entry(root)
+exercise_level_entry.grid(row=2, column=1, padx=10, pady=5)
+
+diet_label = tk.Label(root, text="Diet (1-10):")
+diet_label.grid(row=3, column=0, padx=10, pady=5)
+diet_entry = tk.Entry(root)
+diet_entry.grid(row=3, column=1, padx=10, pady=5)
+
+predict_button = tk.Button(root, text="Predict BMI", command=predict_bmi)
+predict_button.grid(row=4, column=0, columnspan=2, pady=10)
+
+result_label = tk.Label(root, text="Predicted BMI: ")
+result_label.grid(row=5, column=0, columnspan=2, pady=5)
+
+# Run the Tkinter event loop
+root.mainloop()
